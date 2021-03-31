@@ -53,7 +53,6 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i < am_of_processes; ++i) {
         wait(0);
     }
-    puts("Main ended!");
     return 0;
 
 }
@@ -70,7 +69,7 @@ void find_files(char *root_path) {
     struct dirent *struct_dirent;
     char *path;
     errno = 0;
-    pid_t pid = 1;
+    pid_t pid = -1;
     DIR *curr_dir;
     if ((curr_dir = opendir(root_path)) == NULL) {
         print_error(program_name, strerror(errno), NULL);
@@ -86,15 +85,17 @@ void find_files(char *root_path) {
                 wait(0);
                 am_of_processes--;
             }
-            pid = fork();
-            if (pid == -1) {
-                print_error(program_name, strerror(errno), NULL);
-                errno = 0;
-            } else if (pid == 0) {
-                get_hash(path);
-                exit(0);
-            } else if (pid > 0) {
-                am_of_processes++;
+            while (pid == -1) {
+                pid = fork();
+                if (pid == -1) {
+                    print_error(program_name, strerror(errno), NULL);
+                    errno = 0;
+                } else if (pid == 0) {
+                    get_hash(path);
+                    exit(0);
+                } else if (pid > 0) {
+                    am_of_processes++;
+                }
             }
         }
         errno = 0;
