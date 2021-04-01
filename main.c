@@ -83,7 +83,7 @@ void find_files(char *root_path) {
                 wait(0);
                 am_of_processes--;
             }
-            while (pid == -1) {
+            do {
                 pid = fork();
                 if (pid == -1) {
                     print_error(program_name, strerror(errno), NULL);
@@ -94,7 +94,7 @@ void find_files(char *root_path) {
                 } else if (pid > 0) {
                     am_of_processes++;
                 }
-            }
+            } while (pid == -1);
         }
         errno = 0;
     }
