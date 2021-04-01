@@ -50,9 +50,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     find_files(dir_name);
-    for (int i = 0; i < am_of_processes; ++i) {
-        wait(0);
-    }
+    while (wait(0) != - 1) {}
     return 0;
 
 }
