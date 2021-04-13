@@ -34,7 +34,7 @@ char *program_name;
 int max_am_of_proc;
 int am_of_processes = 0;
 const int size_of_buff = 4096 * 4096;
-char data[size_of_buff];
+char data[4096*4096];
 
 
 // Constants are the integer part of the sines of integers (in radians) * 2^32.
@@ -258,17 +258,11 @@ void get_hash(char *path) {
         errno = 0;
         return;
     }
-    struct stat *buf = (struct stat *) calloc(1, sizeof(struct stat));
-    if (fstat(file->_fileno, buf) == -1) {
-        print_error(program_name, strerror(errno), NULL);
-        errno = 0;
-        return;
-    }
+
     size_t am_of_bytes = 0;
     uint8_t result[16];
     size_t total_size = 0;
-    while (!feof(file)) {
-        am_of_bytes = fread(data, sizeof(char), size_of_buff, file);
+    while ((am_of_bytes = fread(data, sizeof(char), size_of_buff, file))) {
         if (am_of_bytes != size_of_buff) {
             if (ferror(file)) {
                 print_error(program_name, path, NULL);
